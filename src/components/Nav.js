@@ -1,6 +1,17 @@
-const Nav = () => {
+
+const Nav = ({ minimal, authToken, setShowModal, showModal }) => {
+
+    const handleClick = () => {
+        setShowModal(true)
+    }
+
     return (
-        <div>Nav</div>
+        <nav>
+            {!authToken && !minimal && <button
+            onClick={handleClick}
+                disabled={showModal}>
+                Log in</button>}
+        </nav>
     )
 }
 
