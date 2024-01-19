@@ -17,7 +17,7 @@ const Home = () => {
         <div>
         <Nav minimal={false} authToken={authToken} setShowModal={ setShowModal} showModal={showModal}/>
         <div>
-            <h1>Swipe Right</h1>
+            <h1>Tinder</h1>
             <button onClick={handleClick}>
                 {authToken ? 'Signout' : 'Create Account'}
             </button>
