@@ -18,7 +18,6 @@ const Home = () => {
     return (
         <div>
         <Nav minimal={false}
-        authToken={authToken}
         setShowModal={ setShowModal}
         showModal={showModal}
         setIsSignUp={setIsSignUp}/>
