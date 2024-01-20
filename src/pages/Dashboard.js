@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../index.css';
+import ChatContainer from '../components/ChatContainer';
 
 const Dashboard = () => {
     const characters = [
@@ -49,6 +50,7 @@ const Dashboard = () => {
   
     return (
       <div>
+        <ChatContainer/>
         <div>
           <div className="card-container">
             {characters.slice(visibleIndex, visibleIndex + 1).map((character) => (
