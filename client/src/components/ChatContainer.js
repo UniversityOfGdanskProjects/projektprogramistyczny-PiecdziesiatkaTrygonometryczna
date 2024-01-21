@@ -11,7 +11,7 @@ const ChatContainer = ({ user }) => {
             <button>Chat</button>
         </div>
 
-        <MatchesDisplay/>
+        <MatchesDisplay matches={user.matches}/>
 
         <ChatDisplay/>
     </div>

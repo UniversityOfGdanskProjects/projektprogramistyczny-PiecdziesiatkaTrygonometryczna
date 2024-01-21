@@ -46,25 +46,45 @@ const Dashboard = () => {
     getGenderedUsers()
   }, [user, genderedUsers])
 
-  console.log('genderedUsers', genderedUsers)
 
+const updatedMatches = async (matchedUserId) => {
+  try {
+    await axios.put('http://localhost:8000/addmatch', {
+      userId,
+      matchedUserId
+    })
+    getUser()
+  } catch (error) {
+    console.error(error)
+  }
+}
 
+  const swiped = (direction, swipedUserId) => {
 
-
-  const swiped = (direction, nameToDelete) => {
-    console.log('removing: ' + nameToDelete);
+    if (direction === 'right') {
+    updatedMatches(swipedUserId)
+    }
     setLastDirection(direction);
 
     setVisibleIndex((prevIndex) => prevIndex + 1);
   };
 
   const handleSwipeLeft = () => {
-    swiped('left', genderedUsers[visibleIndex].name);
+    swiped('left', genderedUsers[visibleIndex].user_id);
   };
 
   const handleSwipeRight = () => {
-    swiped('right', genderedUsers[visibleIndex].name);
+    swiped('right', genderedUsers[visibleIndex].user_id);
   };
+
+
+  const matchedUserIds = user?.matches?.map(({ user_id}) => user_id).concat(userId)
+
+const filteredGenderedUsers = genderedUsers?.filter(
+  genderedUser => !matchedUserIds.includes(genderedUsers.user_id)
+
+)
+
 
   return (
     <>
@@ -80,7 +100,7 @@ const Dashboard = () => {
                   style={{
                     backgroundImage: `url(${genderedUser.url})`,
                   }}
-                  onClick={() => swiped('right', genderedUser.first_name)}
+                  onClick={() => swiped('right', genderedUser.user_id)}
                 >
                   <div className="card">
                     <h3>{genderedUser.first_name}</h3>
