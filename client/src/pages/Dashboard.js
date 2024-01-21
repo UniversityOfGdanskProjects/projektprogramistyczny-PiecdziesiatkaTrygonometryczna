@@ -1,83 +1,104 @@
-import React, { useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import '../index.css';
 import ChatContainer from '../components/ChatContainer';
+import axios from 'axios'
 
 const Dashboard = () => {
-    const characters = [
-      {
-        name: 'lol lol',
-        url: 'https://th.bing.com/th/id/OIG.jDYldViIJQmVHCw5fKSt?pid=ImgGn',
-      },
-      {
-        name: 'lol lol2',
-        url: 'https://th.bing.com/th/id/OIG.pS1KxDE1POyFeJVKMOdz?pid=ImgGn',
-      },
-      {
-        name: 'lol lol3',
-        url: 'https://th.bing.com/th/id/OIG.jDYldViIJQmVHCw5fKSt?pid=ImgGn',
-      },
-      {
-        name: 'lol lol4',
-        url: 'https://th.bing.com/th/id/OIG.Byldx5lCImKX7qR_y1pH?w=1024&h=1024&rs=1&pid=ImgDetMain',
-      },
-      {
-        name: 'lol lol5',
-        url: 'https://th.bing.com/th/id/OIG.syPXz33QvOwXE07BQDb4?pid=ImgGn',
-      },
-    ];
-  
-    const [lastDirection, setLastDirection] = useState();
-    const [visibleIndex, setVisibleIndex] = useState(0);
-  
-    const swiped = (direction, nameToDelete) => {
-      console.log('removing: ' + nameToDelete);
-      setLastDirection(direction);
-  
-      setVisibleIndex((prevIndex) => prevIndex + 1);
-    };
-  
-    const outOfFrame = (name) => {
-      console.log(name + ' left the screen!');
-    };
-  
-    const handleSwipeLeft = () => {
-      swiped('left', characters[visibleIndex].name);
-    };
-  
-    const handleSwipeRight = () => {
-      swiped('right', characters[visibleIndex].name);
-    };
-  
-    return (
-      <div>
-        <ChatContainer/>
-        <div>
-          <div className="card-container">
-            {characters.slice(visibleIndex, visibleIndex + 1).map((character) => (
-              <div
-                key={character.name}
-                className="swipe top-card"
-                style={{
-                  backgroundImage: `url(${character.url})`,
-                }}
-                onClick={() => swiped('right', character.name)}
-              >
-                <div className="card">
-                  <h3>{character.name}</h3>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="swipe-info">
-            {lastDirection ? <p>You swiped {lastDirection}</p> : <p />}
-          </div>
-          <div className="buttons">
-            <button onClick={handleSwipeLeft} disabled={visibleIndex === characters.length}>Swipe Left</button>
-            <button onClick={handleSwipeRight} disabled={visibleIndex === characters.length}>Swipe Right</button>
-          </div>
-        </div>
-      </div>
-    );
+  const [user, setUser] = useState(null)
+  const [genderedUsers, setGenderedUsers] = useState(null)
+  const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const [lastDirection, setLastDirection] = useState();
+  const [visibleIndex, setVisibleIndex] = useState(0);
+
+  const userId = cookies.UserId
+
+
+  const getUser = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/user', {
+
+        params: { userId }
+      })
+      setUser(response.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const getGenderedUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/gendered-users', {
+        params: { gender: user?.gender_interest }
+      })
+
+      setGenderedUsers(response.data)
+    } catch (error) {
+      console.error(error)
+    }
+
+  }
+
+
+
+  useEffect(() => {
+    getUser()
+    getGenderedUsers()
+  }, [user, genderedUsers])
+
+  console.log('genderedUsers', genderedUsers)
+
+
+
+
+  const swiped = (direction, nameToDelete) => {
+    console.log('removing: ' + nameToDelete);
+    setLastDirection(direction);
+
+    setVisibleIndex((prevIndex) => prevIndex + 1);
   };
-  
-  export default Dashboard;
+
+  const handleSwipeLeft = () => {
+    swiped('left', genderedUsers[visibleIndex].name);
+  };
+
+  const handleSwipeRight = () => {
+    swiped('right', genderedUsers[visibleIndex].name);
+  };
+
+  return (
+    <>
+      {user &&
+        <div>
+          <ChatContainer user={user} />
+          <div>
+            <div className="card-container">
+              {genderedUsers?.slice(visibleIndex, visibleIndex + 1).map((genderedUser) => (
+                <div
+                  key={genderedUser.first_name}
+                  className="swipe top-card"
+                  style={{
+                    backgroundImage: `url(${genderedUser.url})`,
+                  }}
+                  onClick={() => swiped('right', genderedUser.first_name)}
+                >
+                  <div className="card">
+                    <h3>{genderedUser.first_name}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="swipe-info">
+              {lastDirection ? <p>You swiped {lastDirection}</p> : <p />}
+            </div>
+            <div className="buttons">
+              <button onClick={handleSwipeLeft} disabled={visibleIndex === genderedUsers.length}>Swipe Left</button>
+              <button onClick={handleSwipeRight} disabled={visibleIndex === genderedUsers.length}>Swipe Right</button>
+            </div>
+          </div>
+        </div>}
+    </>
+  );
+};
+
+export default Dashboard;

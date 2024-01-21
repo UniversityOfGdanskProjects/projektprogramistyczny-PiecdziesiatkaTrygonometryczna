@@ -83,22 +83,58 @@ res.status(400).send('Invalid credentials')
 })
 
 
-app.get('/users', async (req, res) => {
+
+app.get('/user', async (req, res) => {
   const client = new MongoClient(uri)
+  const userId = req.query.userId
+
+  console.log('userId', userId)
+
+  try {
+      await client.connect()
+      const database = client.db('app-data')
+      const users = database.collection('users')
+
+      const query = {user_id: userId}
+      const user = await users.findOne(query)
+      res.send(user)
+
+  } finally {
+      await client.close()
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
+app.get('/gendered-users', async (req, res) => {
+  const client = new MongoClient(uri)
+  const gender = req.query.gender
+
+  console.log('gender', gender)
 
   try {
     await client.connect()
     const database = client.db('app-data')
     const users = database.collection('users')
+    const query = { gender_identity: { $eq : gender}}
+    const foundUsers = await users.find(query).toArray()
 
-    const returnedUsers = await users.find().toArray()
-    res.send(returnedUsers)
+
+    res.send(foundUsers)
   } finally {
     await client.close()
   }
 })
 
-app.put('/user', async (req, res) => {
+app.put('/user', async ( req, res ) => {
   const client = new MongoClient(uri)
   const formData = req.body.formData
 
