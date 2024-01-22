@@ -24,7 +24,7 @@ const MatchesDisplay = ( { matches, setClickedUser  } ) => {
 
 useEffect(() => {
     getMatches()
-}, [])
+}, [matches])
 
 const filteredMatchedProfiles = matchedProfiles?.filter(
     (matchedProfile) =>

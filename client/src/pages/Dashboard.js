@@ -39,12 +39,16 @@ const Dashboard = () => {
 
   }
 
-
-
   useEffect(() => {
     getUser()
-    getGenderedUsers()
-  }, [user, genderedUsers])
+
+}, [])
+
+useEffect(() => {
+    if (user) {
+        getGenderedUsers()
+    }
+}, [user])
 
 
 const updatedMatches = async (matchedUserId) => {
@@ -93,9 +97,9 @@ const filteredGenderedUsers = genderedUsers?.filter(
           <ChatContainer user={user} />
           <div>
             <div className="card-container">
-              {genderedUsers?.slice(visibleIndex, visibleIndex + 1).map((genderedUser) => (
+              {filteredGenderedUsers?.slice(visibleIndex, visibleIndex + 1).map((genderedUser) => (
                 <div
-                  key={genderedUser.first_name}
+                  key={genderedUser.user_id}
                   className="swipe top-card"
                   style={{
                     backgroundImage: `url(${genderedUser.url})`,
@@ -112,8 +116,8 @@ const filteredGenderedUsers = genderedUsers?.filter(
               {lastDirection ? <p>You swiped {lastDirection}</p> : <p />}
             </div>
             <div className="buttons">
-              <button onClick={handleSwipeLeft} disabled={visibleIndex === genderedUsers.length}>Swipe Left</button>
-              <button onClick={handleSwipeRight} disabled={visibleIndex === genderedUsers.length}>Swipe Right</button>
+            <button onClick={handleSwipeLeft} disabled={visibleIndex === genderedUsers?.length}>Swipe Left</button>
+            <button onClick={handleSwipeRight} disabled={visibleIndex === genderedUsers?.length}>Swipe Right</button>
             </div>
           </div>
         </div>}
