@@ -48,3 +48,7 @@
     cursor: pointer;
   }
   
+  .editprofileform {
+    position: relative;
+    left: 300px;
+}

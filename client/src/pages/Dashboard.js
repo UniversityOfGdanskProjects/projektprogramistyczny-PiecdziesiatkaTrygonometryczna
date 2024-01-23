@@ -3,6 +3,7 @@ import { useCookies } from 'react-cookie';
 import '../index.css';
 import ChatContainer from '../components/ChatContainer';
 import axios from 'axios'
+import ProfileUpdateForm from '../components/ProfileUpdateForm';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null)
@@ -10,9 +11,17 @@ const Dashboard = () => {
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
   const [lastDirection, setLastDirection] = useState();
   const [visibleIndex, setVisibleIndex] = useState(0);
+  const [editMode, setEditMode] = useState(false);
 
   const userId = cookies.UserId
 
+  const handleEditClick = () => {
+    setEditMode(true);
+  };
+
+  const handleFormSubmit = () => {
+    setEditMode(false);
+  };
 
   const getUser = async () => {
     try {
@@ -94,6 +103,16 @@ const filteredGenderedUsers = genderedUsers?.filter(
     <>
       {user &&
         <div>
+          <div className='editprofileform'>
+          <button onClick={handleEditClick}>Edytuj profil</button>
+          {editMode && (
+            <ProfileUpdateForm
+              userId={userId}
+              user={user}
+              onFormSubmit={handleFormSubmit}
+            />
+          )}
+          </div>
           <ChatContainer user={user} />
           <div>
             <div className="card-container">

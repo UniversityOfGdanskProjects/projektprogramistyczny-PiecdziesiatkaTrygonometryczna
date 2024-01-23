@@ -280,6 +280,35 @@ app.post('/login', async (req, res) => {
     }
   })
 
+  app.put('/update-profile', async (req, res) => {
+    const client = new MongoClient(uri);
+  
+    try {
+      await client.connect();
+      const database = client.db('app-data');
+      const users = database.collection('users');
+  
+      const { userId, updatedData } = req.body;
+  
+      const query = { user_id: userId };
+      const updateDocument = { $set: updatedData };
+  
+      const result = await users.updateOne(query, updateDocument);
+  
+      if (result.modifiedCount === 1) {
+        res.status(200).send('Profile updated successfully');
+      } else {
+        res.status(404).send('User not found');
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('An error occurred while processing your request.');
+    } finally {
+      await client.close();
+    }
+  });
+  
+
 
 
   app.listen(port, () => console.log(`Server listening on port ${port}`))
