@@ -98,12 +98,22 @@ const filteredGenderedUsers = genderedUsers?.filter(
 
 )
 
+const handleDeleteAccount = async () => {
+  try {
+    await axios.delete(`http://localhost:8000/delete-account?userId=${userId}`);
+    window.location.href = '/'; 
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
   return (
     <>
       {user &&
         <div>
           <div className='editprofileform'>
+          <button onClick={handleDeleteAccount}>Delete Account</button>
           <button onClick={handleEditClick}>Edytuj profil</button>
           {editMode && (
             <ProfileUpdateForm

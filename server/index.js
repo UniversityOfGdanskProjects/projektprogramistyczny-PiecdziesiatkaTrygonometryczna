@@ -264,6 +264,31 @@ app.post('/login', async (req, res) => {
     }
   })
 
+app.delete('/delete-account', async (req, res) => {
+  const client = new MongoClient(uri);
+  const userId = req.query.userId;
+
+  try {
+    await client.connect();
+    const database = client.db('app-data');
+    const users = database.collection('users');
+
+    const result = await users.deleteOne({ user_id: userId });
+
+    if (result.deletedCount === 1) {
+      res.status(200).send('Account deleted successfully');
+    } else {
+      res.status(404).send('User not found');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  } finally {
+    await client.close();
+  }
+});
+
+
   app.post('/message', async (req, res) => {
     const client = new MongoClient(uri)
     const message = req.body.message
