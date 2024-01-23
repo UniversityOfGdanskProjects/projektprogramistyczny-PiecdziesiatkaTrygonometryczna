@@ -1,0 +1,5 @@
+curl -X POST -H "Content-Type: application/json" -d '{"email":"test@example.com", "password":"testpassword"}' http://localhost:8000/signup
+
+curl -X GET 'http://localhost:8000/user?userId=c518f178-0980-467f-b388-13a833cc4c6f'
+
+curl -X DELETE 'http://localhost:8000/delete-account?userId=ea9e08c2-e431-4a81-878c-fc8b4ee3e8f0'
