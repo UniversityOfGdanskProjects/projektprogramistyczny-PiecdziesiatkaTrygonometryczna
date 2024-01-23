@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const cors = require('cors')
 const bcrypt = require('bcrypt')
+const aggregations = require('./aggregations');
 
 app.use(cors())
 app.use(express.json())
@@ -18,6 +19,28 @@ app.get('/', (req, res) => {
 app.get('/find', (req, res) => {
   res.sendFile(__dirname + '/client/build/index.html');
 });
+
+
+app.get('/average-age-by-gender', async (req, res) => {
+  await aggregations.getAverageAgeByGender();
+  res.send('Check the console for the result.');
+});
+
+app.get('/count-by-gender', async (req, res) => {
+  await aggregations.getCountByGender();
+  res.send('Check the console for the result.');
+});
+
+app.get('/oldest-and-youngest-user', async (req, res) => {
+  await aggregations.getOldestAndYoungestUser();
+  res.send('Check the console for the result.');
+});
+
+app.get('/most-common-names', async (req, res) => {
+  await aggregations.getMostCommonNames();
+  res.send('Check the console for the result.');
+});
+
 
 app.get('/api/search-users', async (req, res) => {
   const { keyword, gender, dob_day, dob_month, dob_year, about} = req.query;
