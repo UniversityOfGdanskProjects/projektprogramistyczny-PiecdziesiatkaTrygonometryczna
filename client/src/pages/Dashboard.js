@@ -17,14 +17,13 @@ const Dashboard = () => {
 
   const userId = cookies.UserId
 
-  const handleEditClick = () => {
+  function handleEditClick() {
     setEditMode(true);
-  };
+  }
 
-  const handleFormSubmit = () => {
+  function handleFormSubmit() {
     setEditMode(false);
-  };
-
+  }
   const getUser = () => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -80,7 +79,7 @@ useEffect(() => {
 }, [user])
 
 
-const saveUserDataToFile = () => {
+function saveUserDataToFile() {
   const userDataToSave = {
     user: {
       user_id: user.user_id,
@@ -103,7 +102,7 @@ const saveUserDataToFile = () => {
   link.href = URL.createObjectURL(blob);
   link.download = 'user_data.json';
   link.click();
-};
+}
 
 const updatedMatches = async (matchedUserId) => {
   try {
