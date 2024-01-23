@@ -15,6 +15,46 @@ app.get('/', (req, res) => {
   res.json('Hello World!')
 })
 
+app.get('/find', (req, res) => {
+  res.sendFile(__dirname + '/client/build/index.html');
+});
+
+app.get('/api/search-users', async (req, res) => {
+  const { keyword, gender, dob_day, dob_month, dob_year, about} = req.query;
+
+  if (!keyword && !gender && !dob_day && !dob_month && !dob_year && !about) {
+    return res.status(400).json({ error: 'At least one search parameter is required.' });
+  }
+
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const database = client.db('app-data');
+    const users = database.collection('users');
+
+    const query = {
+      first_name: { $regex: keyword || '', $options: 'i' },
+      about: { $regex: about || '', $options: 'i' },
+      gender_identity: gender && gender !== 'all' ? gender : { $exists: true },
+      dob_day: dob_day || { $exists: true },
+      dob_month: dob_month || { $exists: true },
+      dob_year: dob_year || { $exists: true },
+    };
+
+    const foundUsers = await users.find(query).toArray();
+
+
+    res.json(foundUsers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'error' });
+  } finally {
+    await client.close();
+  }
+});
+
+
 app.post('/signup', async (req, res) => {
   const client = new MongoClient(uri)
   const { email, password } = req.body

@@ -12,6 +12,8 @@ const Dashboard = () => {
   const [lastDirection, setLastDirection] = useState();
   const [visibleIndex, setVisibleIndex] = useState(0);
   const [editMode, setEditMode] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   const userId = cookies.UserId
 
@@ -47,6 +49,15 @@ const Dashboard = () => {
     }
 
   }
+
+  const searchUsers = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/search-users?keyword=${searchKeyword}`);
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     getUser()

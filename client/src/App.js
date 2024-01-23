@@ -1,6 +1,7 @@
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard';
 import OnBoarding from './pages/OnBoarding';
+import FindUsers from './pages/FindUsers';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
@@ -16,6 +17,7 @@ const App = () => {
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        {authToken && <Route path="/find" element={<FindUsers />} />}
         {authToken && <Route path="/dashboard" element={<Dashboard />} />}
         {authToken && <Route path="/onBoarding" element={<OnBoarding />} />}
       </Routes>

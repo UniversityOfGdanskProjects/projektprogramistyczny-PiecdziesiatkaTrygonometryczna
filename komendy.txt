@@ -1,9 +1,0 @@
-client
-npm run start:frontend
-
-
-server
-
-nvm use 20
-
-node index.js
