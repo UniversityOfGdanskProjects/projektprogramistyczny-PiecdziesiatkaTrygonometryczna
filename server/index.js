@@ -41,6 +41,27 @@ app.get('/most-common-names', async (req, res) => {
   res.send('Check the console for the result.');
 });
 
+app.get('/message-statistics', async (req, res) => {
+  await aggregations.getMessageStatistics();
+  res.send('Check the console for the result.');
+});
+
+app.get('/gender-message-statistics', async (req, res) => {
+  await aggregations.getGenderMessageStatistics();
+  res.send('Check the console for the result.');
+});
+
+app.get('/average-age-of-matched-users', async (req, res) => {
+  await aggregations.getAverageAgeOfMatchedUsers();
+  res.send('Check the console for the result.');
+});
+
+app.get('/most-common-words-in-about-section', async (req, res) => {
+  await aggregations.getMostCommonWordsInAboutSection();
+  res.send('Check the console for the result.');
+});
+
+
 
 app.get('/api/search-users', async (req, res) => {
   const { keyword, gender, dob_day, dob_month, dob_year, about} = req.query;

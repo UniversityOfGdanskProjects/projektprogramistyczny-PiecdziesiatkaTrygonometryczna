@@ -12,3 +12,5 @@ node index.js
 
 
 http://localhost:3000/find aby skorzystac z mozliwosci wyszukiwania uzytkownikow z bazy danych
+
+aby skorzystac z komend w pliku curl.txt, nalezy uruchomić serwer, oraz w konsoli w katalogu server wpisać poszcególne komendy curl
