@@ -1,0 +1,9 @@
+client
+npm run start:frontned
+
+
+server
+
+nvm use 20
+
+node index.js

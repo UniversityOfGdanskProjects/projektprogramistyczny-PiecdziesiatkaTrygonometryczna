@@ -1,7 +1,7 @@
 const port = 8000
 const express = require('express');
 const { MongoClient } = require('mongodb');
-const uri = 'mongodb://localhost:27023/';
+const uri = 'mongodb://localhost:27069/';
 const app = express()
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
@@ -128,8 +128,6 @@ app.post('/login', async (req, res) => {
         ]
       const foundUsers = await users.aggregate(pipeline).toArray()
       console.log(foundUsers)
-      res.send(foundUsers)
-
       res.send(foundUsers)
     } finally {
       await client.close()
