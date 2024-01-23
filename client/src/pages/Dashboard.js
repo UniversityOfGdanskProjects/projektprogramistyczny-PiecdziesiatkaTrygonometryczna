@@ -101,7 +101,7 @@ const filteredGenderedUsers = genderedUsers?.filter(
 const handleDeleteAccount = async () => {
   try {
     await axios.delete(`http://localhost:8000/delete-account?userId=${userId}`);
-    window.location.href = '/'; 
+    window.location.href = '/login'; 
   } catch (error) {
     console.error(error);
   }
