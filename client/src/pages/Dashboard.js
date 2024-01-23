@@ -60,6 +60,31 @@ useEffect(() => {
 }, [user])
 
 
+const saveUserDataToFile = () => {
+  const userDataToSave = {
+    user: {
+      user_id: user.user_id,
+      first_name: user.first_name,
+      dob_day: user.dob_day,
+      dob_month: user.dob_month,
+      dob_year: user.dob_year,
+      show_gender: user.show_gender,
+      gender_identity: user.gender_identity,
+      gender_interest: user.gender_interest,
+      url: user.url,
+      about: user.about,
+    },
+    lastDirection,
+    visibleIndex,
+  };
+
+  const blob = new Blob([JSON.stringify(userDataToSave)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'user_data.json';
+  link.click();
+};
+
 const updatedMatches = async (matchedUserId) => {
   try {
     await axios.put('http://localhost:8000/addmatch', {
@@ -115,6 +140,7 @@ const handleDeleteAccount = async () => {
           <div className='editprofileform'>
           <button onClick={handleDeleteAccount}>Delete Account</button>
           <button onClick={handleEditClick}>Edytuj profil</button>
+            <button onClick={saveUserDataToFile}>Zapisz dane do pliku JSON</button>
           {editMode && (
             <ProfileUpdateForm
               userId={userId}
