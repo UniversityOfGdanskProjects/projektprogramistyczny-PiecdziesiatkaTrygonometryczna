@@ -25,38 +25,47 @@ const Dashboard = () => {
     setEditMode(false);
   };
 
-  const getUser = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/user', {
+  const getUser = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.get('http://localhost:8000/user', {
+          params: { userId },
+        });
+        setUser(response.data);
+        resolve();
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
+    });
+  };
 
-        params: { userId }
-      })
-      setUser(response.data)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  const getGenderedUsers = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.get('http://localhost:8000/gendered-users', {
+          params: { gender: user?.gender_interest },
+        });
+        setGenderedUsers(response.data);
+        resolve();
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
+    });
+  };
 
-  const getGenderedUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/gendered-users', {
-        params: { gender: user?.gender_interest }
-      })
-
-      setGenderedUsers(response.data)
-    } catch (error) {
-      console.error(error)
-    }
-
-  }
-
-  const searchUsers = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/search-users?keyword=${searchKeyword}`);
-      setSearchResults(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+  const searchUsers = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/search-users?keyword=${searchKeyword}`);
+        setSearchResults(response.data);
+        resolve();
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
+    });
   };
 
   useEffect(() => {
