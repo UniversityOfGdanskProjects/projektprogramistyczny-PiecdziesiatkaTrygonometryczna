@@ -1,5 +1,5 @@
 client
-npm run start:frontned
+npm run start:frontend
 
 
 server

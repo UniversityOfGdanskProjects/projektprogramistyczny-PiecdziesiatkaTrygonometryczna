@@ -23,17 +23,31 @@ const OnBoarding = () => {
     let navigate = useNavigate()
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            const response = await axios.put('http://localhost:8000/user', { formData })
-            const success = response.status === 200
-            console.log(response)
-            if (success) navigate('/dashboard')
-            } catch (err) {
-                console.log(err)
-            }
-
+        e.preventDefault();
+    
+        if (!formData.first_name || !formData.dob_day || !formData.dob_month || !formData.dob_year || !formData.url) {
+          console.error('Wypełnij wszystkie pola formularza.');
+          return;
         }
+    
+        const dobDate = new Date(`${formData.dob_month}/${formData.dob_day}/${formData.dob_year}`);
+        if (isNaN(dobDate.getTime())) {
+          console.error('Podano nieprawidłową datę urodzenia.');
+          return;
+        }
+    
+        try {
+          const response = await axios.put('http://localhost:8000/user', { formData });
+          const success = response.status === 200;
+          console.log(response);
+    
+          if (success) {
+            navigate('/dashboard');
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
     
 
     const handleChange = (e) => {
