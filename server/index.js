@@ -595,6 +595,10 @@ app.post('/users-curl', async (req, res) => {
     const users = database.collection('users');
     const generatedUserId = uuidv4();
 
+    if (!userData.first_name || userData.first_name.length > 20) {
+      return res.status(400).send('Invalid "first_name" field. It must not be empty.');
+    }
+
     if (!userData.about || userData.about.length > 500) {
       return res.status(400).send('Invalid "about" field. It must not be empty and should be at most 500 characters.');
     }
@@ -619,6 +623,14 @@ app.post('/users-curl', async (req, res) => {
     const currentDate = new Date();
     if (dobTimestamp > currentDate) {
       return res.status(400).json({ error: 'Invalid date. Date of birth cannot be in the future.' });
+    }
+
+    if (!['man', 'woman', 'other'].includes(userData.gender_identity)) {
+      return res.status(400).json({ error: 'Invalid "gender_identity". It must be "man", "woman", or "other".' });
+    }
+
+    if (!['man', 'woman', 'all'].includes(userData.gender_interest)) {
+      return res.status(400).json({ error: 'Invalid "gender_interest". It must be "man", "woman", or "all".' });
     }
 
     userData.user_id = generatedUserId;

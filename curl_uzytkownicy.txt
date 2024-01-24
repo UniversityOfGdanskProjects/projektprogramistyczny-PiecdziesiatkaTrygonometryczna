@@ -5,10 +5,10 @@ curl -X POST -H "Content-Type: application/json" -d '{
     "about": "Hello, I'\''m a new user.",
     "dob_day": "29",
     "dob_month": "02",
-    "dob_year": "2001",
+    "dob_year": "2000",
     "first_name": "John",
-    "gender_identity": "man",
-    "gender_interest": "woman",
+    "gender_identity": "other",
+    "gender_interest": "e",
     "matches": [
       {"user_id": "existing-user-id-1"},
       {"user_id": "existing-user-id-2"}
