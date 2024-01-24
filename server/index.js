@@ -633,6 +633,25 @@ app.post('/users-curl', async (req, res) => {
       return res.status(400).json({ error: 'Invalid "gender_interest". It must be "man", "woman", or "all".' });
     }
 
+    const existingUserIds = (await users.find({}, { projection: { user_id: 1 } }).toArray()).map(user => user.user_id);
+
+    for (const match of userData.matches) {
+      if (!existingUserIds.includes(match.user_id) || match.user_id === userData.user_id) {
+        return res.status(400).json({ error: 'Invalid "matches" field. Each user_id must exist in the database and be different from the current user.' });
+      }
+    }
+
+    if (userData.show_gender !== 'true' && userData.show_gender !== 'false') {
+      return res.status(400).send('Invalid "show_gender" field. It must be either "true" or "false".');
+    }
+
+    if (!validator.isURL(userData.url)) {
+      return res.status(400).send('Invalid "url" field. It must be a valid URL');
+    }
+    
+    
+
+
     userData.user_id = generatedUserId;
 
     const insertedUser = await users.insertOne(userData);

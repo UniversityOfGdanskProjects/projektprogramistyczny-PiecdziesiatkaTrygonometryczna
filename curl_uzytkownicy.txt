@@ -8,12 +8,12 @@ curl -X POST -H "Content-Type: application/json" -d '{
     "dob_year": "2000",
     "first_name": "John",
     "gender_identity": "other",
-    "gender_interest": "e",
+    "gender_interest": "all",
     "matches": [
-      {"user_id": "existing-user-id-1"},
-      {"user_id": "existing-user-id-2"}
+      {"user_id": "22625505-0f8a-443e-8cc8-56677a94bfb1"},
+      {"user_id": "30859a36-a059-45f0-8186-5e42bcfdb635"}
     ],
-    "show_gender": "true",
-    "url": "https://example.com/avatar.jpg"
+    "show_gender": "false",
+    "url": "bingcom"
   }
 }' http://localhost:8000/users-curl
