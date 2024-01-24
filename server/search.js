@@ -6,7 +6,7 @@ const port = 8000;
 
 const uri = 'mongodb://localhost:27069/';
 const client = new MongoClient(uri);
-
+    
 app.use(express.json());
 
 app.get('/api/search-users', async (req, res) => {

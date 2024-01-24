@@ -21,8 +21,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 curl -X PUT -H "Content-Type: application/json" -d '{
   "updatedUserData": {
-    "first_name": "NewFirstName",
-    "email": "newemail@example.com",
+    "first_name": "jan",
+    "email": "aaa@example.com",
     "about": "New about text.",
     "dob_day": "01",
     "dob_month": "01",
@@ -30,14 +30,14 @@ curl -X PUT -H "Content-Type: application/json" -d '{
     "gender_identity": "other",
     "gender_interest": "all",
     "matches": [
-      {"user_id": "22625505-0f8a-443e-8cc8-56677a94bfb1"},
+      {"user_id": "asd"},
       {"user_id": "30859a36-a059-45f0-8186-5e42bcfdb635"}
     ],
     "show_gender": "true",
     "url": "https://example.com/newavatar.jpg"
   }
-}' http://localhost:8000/users/c5497fd8-76b3-46a8-a609-f3e61a1d6399
+}' http://localhost:8000/users/760d5ead-0859-40d4-b9da-17a09bd93bf7
 
 
-curl -X DELETE http://localhost:8000/users/c5497fd8-76b3-46a8-a609-f3e61a1d6399
+curl -X DELETE http://localhost:8000/users/8772edb1-e231-48e8-ab2f-1aac14deff24
 

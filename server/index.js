@@ -660,7 +660,7 @@ app.post('/users-curl', async (req, res) => {
     
 
 
-    userData.user_id = generatedUserId;
+    userData.user_id = generatedUserId;x``
 
     const insertedUser = await users.insertOne(userData);
     res.status(201).send('User added successfully');
