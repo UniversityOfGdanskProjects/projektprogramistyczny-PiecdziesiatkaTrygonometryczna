@@ -1,6 +1,6 @@
 const port = 8000
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const uri = 'mongodb://localhost:27069/';
 const app = express()
 const { v4: uuidv4 } = require('uuid');
@@ -8,6 +8,13 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const aggregations = require('./aggregations');
+
+
+const moment = require('moment');
+
+function isValidDate(dateString) {
+    return moment(dateString, moment.ISO_8601, true).isValid();
+}
 
 app.use(cors())
 app.use(express.json())
@@ -64,7 +71,7 @@ app.get('/most-common-words-in-about-section', async (req, res) => {
 
 
 app.get('/api/search-users', async (req, res) => {
-  const { keyword, gender, dob_day, dob_month, dob_year, about} = req.query;
+  const { keyword, gender, dob_day, dob_month, dob_year, about } = req.query;
 
   if (!keyword && !gender && !dob_day && !dob_month && !dob_year && !about) {
     return res.status(400).json({ error: 'At least one search parameter is required.' });
@@ -118,7 +125,7 @@ app.post('/signup', async (req, res) => {
       res.status(409).send('User already exists')
       return;
     }
-    
+
     const sanitizedEmail = email.toLowerCase()
 
     const data = {
@@ -170,183 +177,183 @@ app.post('/login', async (req, res) => {
 
 
 
-  app.get('/user', async (req, res) => {
-    const client = new MongoClient(uri)
-    const userId = req.query.userId
+app.get('/user', async (req, res) => {
+  const client = new MongoClient(uri)
+  const userId = req.query.userId
 
-    console.log('userId', userId)
+  console.log('userId', userId)
 
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const users = database.collection('users')
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const users = database.collection('users')
 
-      const query = { user_id: userId }
-      const user = await users.findOne(query)
-      res.send(user)
+    const query = { user_id: userId }
+    const user = await users.findOne(query)
+    res.send(user)
 
-    } finally {
-      await client.close()
-    }
-  })
+  } finally {
+    await client.close()
+  }
+})
 
-  app.get('/users', async (req, res) => {
-    const client = new MongoClient(uri)
-    const userIds = JSON.parse(req.query.userIds)
+app.get('/users', async (req, res) => {
+  const client = new MongoClient(uri)
+  const userIds = JSON.parse(req.query.userIds)
 
-    console.log('userIds', userIds)
+  console.log('userIds', userIds)
 
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const users = database.collection('users')
-      const pipeline =
-        [
-          {
-            '$match': {
-              'user_id': {
-                '$in': userIds
-              }
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const users = database.collection('users')
+    const pipeline =
+      [
+        {
+          '$match': {
+            'user_id': {
+              '$in': userIds
             }
           }
-        ]
-      const foundUsers = await users.aggregate(pipeline).toArray()
-      console.log(foundUsers)
-      res.send(foundUsers)
-    } finally {
-      await client.close()
-    }
-  })
-
-
-  app.get('/users-db', async (req, res) => {
-    const client = new MongoClient(uri)
-  
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const users = database.collection('users')
-      const foundUsers = await users.find({}).toArray()
-      console.log(foundUsers)
-      res.send(foundUsers)
-    } finally {
-      await client.close()
-    }
-  })
-
-
-
-
-
-
-
-
-
-
-
-  app.get('/gendered-users', async (req, res) => {
-    const client = new MongoClient(uri)
-    const gender = req.query.gender
-
-    console.log('gender', gender)
-
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const users = database.collection('users')
-      const query = { gender_identity: { $eq: gender } }
-      const foundUsers = await users.find(query).toArray()
-
-
-      res.send(foundUsers)
-    } catch (error) {
-      console.error('An error occurred:', error)
-      res.status(500).send('An error occurred while processing your request.')
-    } finally {
-      await client.close()
-    }
-  })
-
-  app.put('/user', async (req, res) => {
-    const client = new MongoClient(uri)
-    const formData = req.body.formData
-
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const users = database.collection('users')
-
-      const query = { user_id: formData.user_id }
-      const updateDocument = {
-        $set: {
-          first_name: formData.first_name,
-          dob_day: formData.dob_day,
-          dob_month: formData.dob_month,
-          dob_year: formData.dob_year,
-          show_gender: formData.gender,
-          gender_identity: formData.gender_identity,
-          gender_interest: formData.gender_interest,
-          url: formData.url,
-          about: formData.about,
-          matches: formData.matches
         }
+      ]
+    const foundUsers = await users.aggregate(pipeline).toArray()
+    console.log(foundUsers)
+    res.send(foundUsers)
+  } finally {
+    await client.close()
+  }
+})
+
+
+app.get('/users-db', async (req, res) => {
+  const client = new MongoClient(uri)
+
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const users = database.collection('users')
+    const foundUsers = await users.find({}).toArray()
+    console.log(foundUsers)
+    res.send(foundUsers)
+  } finally {
+    await client.close()
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
+app.get('/gendered-users', async (req, res) => {
+  const client = new MongoClient(uri)
+  const gender = req.query.gender
+
+  console.log('gender', gender)
+
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const users = database.collection('users')
+    const query = { gender_identity: { $eq: gender } }
+    const foundUsers = await users.find(query).toArray()
+
+
+    res.send(foundUsers)
+  } catch (error) {
+    console.error('An error occurred:', error)
+    res.status(500).send('An error occurred while processing your request.')
+  } finally {
+    await client.close()
+  }
+})
+
+app.put('/user', async (req, res) => {
+  const client = new MongoClient(uri)
+  const formData = req.body.formData
+
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const users = database.collection('users')
+
+    const query = { user_id: formData.user_id }
+    const updateDocument = {
+      $set: {
+        first_name: formData.first_name,
+        dob_day: formData.dob_day,
+        dob_month: formData.dob_month,
+        dob_year: formData.dob_year,
+        show_gender: formData.gender,
+        gender_identity: formData.gender_identity,
+        gender_interest: formData.gender_interest,
+        url: formData.url,
+        about: formData.about,
+        matches: formData.matches
       }
-      const insertedUser = await users.updateOne(query, updateDocument)
-      res.send(insertedUser)
-    } finally {
-      await client.close()
     }
-  })
+    const insertedUser = await users.updateOne(query, updateDocument)
+    res.send(insertedUser)
+  } finally {
+    await client.close()
+  }
+})
 
-  app.put('/addmatch', async (req, res) => {
-    const client = new MongoClient(uri)
-    const { userId, matchedUserId } = req.body
+app.put('/addmatch', async (req, res) => {
+  const client = new MongoClient(uri)
+  const { userId, matchedUserId } = req.body
 
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const users = database.collection('users')
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const users = database.collection('users')
 
-      const query = { user_id: userId }
-      const updateDocument = {
-        $push: {
-          matches: { user_id: matchedUserId }
-        }
+    const query = { user_id: userId }
+    const updateDocument = {
+      $push: {
+        matches: { user_id: matchedUserId }
       }
-
-
-      const user = await users.updateOne(query, updateDocument)
-      res.send(user)
-
-    } finally {
-      await client.close()
     }
 
 
+    const user = await users.updateOne(query, updateDocument)
+    res.send(user)
 
-  })
+  } finally {
+    await client.close()
+  }
 
 
-  
 
-  app.get('/messages', async (req, res) => {
-    const { userId, correspondingUserId } = req.query
-    const client = new MongoClient(uri)
+})
 
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const messages = database.collection('messages')
 
-      const query = {
-        from_userId: userId, to_userId: correspondingUserId
-      }
-      const foundMessages = await messages.find(query).toArray()
-      res.send(foundMessages)
-    } finally {
-      await client.close()
+
+
+app.get('/messages', async (req, res) => {
+  const { userId, correspondingUserId } = req.query
+  const client = new MongoClient(uri)
+
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const messages = database.collection('messages')
+
+    const query = {
+      from_userId: userId, to_userId: correspondingUserId
     }
-  })
+    const foundMessages = await messages.find(query).toArray()
+    res.send(foundMessages)
+  } finally {
+    await client.close()
+  }
+})
 
 app.delete('/delete-account', async (req, res) => {
   const client = new MongoClient(uri);
@@ -374,40 +381,46 @@ app.delete('/delete-account', async (req, res) => {
 
 
 
-  app.put('/update-profile', async (req, res) => {
-    const client = new MongoClient(uri);
-  
-    try {
-      await client.connect();
-      const database = client.db('app-data');
-      const users = database.collection('users');
-  
-      const { userId, updatedData } = req.body;
-  
-      const query = { user_id: userId };
-      const updateDocument = { $set: updatedData };
-  
-      const result = await users.updateOne(query, updateDocument);
-  
-      if (result.modifiedCount === 1) {
-        res.status(200).send('Profile updated successfully');
-      } else {
-        res.status(404).send('User not found');
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('An error occurred while processing your request.');
-    } finally {
-      await client.close();
+app.put('/update-profile', async (req, res) => {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const database = client.db('app-data');
+    const users = database.collection('users');
+
+    const { userId, updatedData } = req.body;
+
+    const query = { user_id: userId };
+    const updateDocument = { $set: updatedData };
+
+    const result = await users.updateOne(query, updateDocument);
+
+    if (result.modifiedCount === 1) {
+      res.status(200).send('Profile updated successfully');
+    } else {
+      res.status(404).send('User not found');
     }
-  });
-  
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  } finally {
+    await client.close();
+  }
+});
+
 // nowe
 
+
+// wiadomosci
+
+//dodanie
 
 app.post('/message', async (req, res) => {
   const client = new MongoClient(uri)
   const message = req.body.message
+
+
 
   try {
     await client.connect()
@@ -427,13 +440,131 @@ app.post('/message', async (req, res) => {
     if (!recipient) {
       return res.status(404).json({ error: 'Recipient not found.' });
     }
-    
+
     if (!sender || !sender.matches.some(match => match.user_id === recipientId)) {
       return res.status(403).json({ error: 'You are not matched with the recipient.' });
     }
 
+    if (!message.message || message.message.length > 500) {
+      return res.status(400).json({ error: 'Invalid message. Message must be between 1 and 500 characters.' });
+    }
+
+    const timestamp = new Date(message.timestamp);
+    if (isNaN(timestamp.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format.' });
+    }
+
+    const isValid = isValidDate(message.timestamp);
+    if (!isValid) {
+      return res.status(400).json({ error: 'Invalid date.' });
+    }
+
+    const currentDate = new Date();
+    if (timestamp > currentDate) {
+      return res.status(400).json({ error: 'Invalid date. Message date cannot be in the future.' });
+    }
+
+    
     const insertedMessage = await messages.insertOne(message);
     res.send(insertedMessage);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  } finally {
+    await client.close();
+  }
+});
+
+//usuniecie
+
+app.delete('/message/:messageId', async (req, res) => {
+  const client = new MongoClient(uri);
+  const messageId = req.params.messageId;
+
+  try {
+    await client.connect();
+    const database = client.db('app-data');
+    const messages = database.collection('messages');
+
+    const result = await messages.deleteOne({ _id: new ObjectId(messageId) });
+
+    if (result.deletedCount === 1) {
+      res.status(200).send('Message deleted successfully');
+    } else {
+      res.status(404).send('Message not found');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  } finally {
+    await client.close();
+  }
+});
+
+app.put('/message/:messageId', async (req, res) => {
+  const client = new MongoClient(uri);
+  const messageId = req.params.messageId;
+  const updatedMessage = req.body.updatedMessage;
+
+  try {
+    await client.connect();
+    const database = client.db('app-data');
+    const users = database.collection('users');
+    const messages = database.collection('messages');
+
+    const existingMessage = await messages.findOne({ _id: new ObjectId(messageId) });
+
+    if (!existingMessage) {
+      return res.status(404).json({ error: 'Message not found.' });
+    }
+
+
+    const recipientId = existingMessage.to_userId;
+    const recipient = await users.findOne({ user_id: recipientId });
+    if (!recipient) {
+      return res.status(404).json({ error: 'Recipient not found.' });
+    }
+
+    if (!sender || !sender.matches.some(match => match.user_id === recipientId)) {
+      return res.status(403).json({ error: 'You are not matched with the recipient.' });
+    }
+
+    if (!updatedMessage || updatedMessage.length > 500) {
+      return res.status(400).json({ error: 'Invalid message. Message must be between 1 and 500 characters.' });
+    }
+
+    const timestamp = new Date(updatedMessage.timestamp);
+    if (isNaN(timestamp.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format.' });
+    }
+
+    const isValid = isValidDate(updatedMessage.timestamp);
+    if (!isValid) {
+      return res.status(400).json({ error: 'Invalid date.' });
+    }
+
+    const currentDate = new Date();
+    if (timestamp > currentDate) {
+      return res.status(400).json({ error: 'Invalid date. Message date cannot be in the future.' });
+    }
+
+    const result = await messages.updateOne(
+      { _id: new ObjectId(messageId) },
+      {
+        $set: {
+          timestamp: updatedMessage.timestamp,
+          from_userId: updatedMessage.from_userId,
+          to_userId: updatedMessage.to_userId,
+          message: updatedMessage.message,
+        }
+      }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.status(200).send('Message updated successfully');
+    } else {
+      res.status(404).send('Message not found');
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send('An error occurred while processing your request.');
@@ -447,5 +578,6 @@ app.post('/message', async (req, res) => {
 
 
 
-  app.listen(port, () => console.log(`Server listening on port ${port}`))
+
+app.listen(port, () => console.log(`Server listening on port ${port}`))
 
