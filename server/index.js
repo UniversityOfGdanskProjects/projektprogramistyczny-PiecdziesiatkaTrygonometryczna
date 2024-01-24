@@ -373,21 +373,6 @@ app.delete('/delete-account', async (req, res) => {
 });
 
 
-  app.post('/message', async (req, res) => {
-    const client = new MongoClient(uri)
-    const message = req.body.message
-
-    try {
-      await client.connect()
-      const database = client.db('app-data')
-      const messages = database.collection('messages')
-
-      const insertedMessage = await messages.insertOne(message)
-      res.send(insertedMessage)
-    } finally {
-      await client.close()
-    }
-  })
 
   app.put('/update-profile', async (req, res) => {
     const client = new MongoClient(uri);
@@ -417,6 +402,48 @@ app.delete('/delete-account', async (req, res) => {
     }
   });
   
+// nowe
+
+
+app.post('/message', async (req, res) => {
+  const client = new MongoClient(uri)
+  const message = req.body.message
+
+  try {
+    await client.connect()
+    const database = client.db('app-data')
+    const users = database.collection('users');
+    const messages = database.collection('messages');
+
+
+    const senderId = message.from_userId;
+    const sender = await users.findOne({ user_id: senderId });
+    if (!sender) {
+      return res.status(404).json({ error: 'Sender not found.' });
+    }
+
+    const recipientId = message.to_userId;
+    const recipient = await users.findOne({ user_id: recipientId });
+    if (!recipient) {
+      return res.status(404).json({ error: 'Recipient not found.' });
+    }
+    
+    if (!sender || !sender.matches.some(match => match.user_id === recipientId)) {
+      return res.status(403).json({ error: 'You are not matched with the recipient.' });
+    }
+
+    const insertedMessage = await messages.insertOne(message);
+    res.send(insertedMessage);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  } finally {
+    await client.close();
+  }
+});
+
+
+
 
 
 

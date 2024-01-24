@@ -20,7 +20,7 @@ const Dashboard = () => {
   function handleEditClick() {
     setEditMode(true);
   }
-
+  
   function handleFormSubmit() {
     setEditMode(false);
   }

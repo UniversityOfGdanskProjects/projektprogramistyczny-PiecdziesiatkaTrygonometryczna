@@ -16,4 +16,6 @@ curl -X GET 'http://localhost:8000/gender-message-statistics'
 curl -X GET 'http://localhost:8000/average-age-of-matched-users'
 curl -X GET 'http://localhost:8000/most-common-words-in-about-section'
 
+pisanie wiadomosci:
 
+curl -X POST -H "Content-Type: application/json" -d '{"message": {"timestamp": "2024-01-23T17:10:19.432Z", "from_userId": "8720f71f-003", "to_userId": "c518f178-0980-467f-b388-13a833cc4c6f", "message": "hej"}}' http://localhost:8000/message
