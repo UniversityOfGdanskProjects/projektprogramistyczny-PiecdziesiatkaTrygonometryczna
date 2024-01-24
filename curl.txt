@@ -34,3 +34,10 @@ curl -X GET 'http://localhost:8000/most-common-words-in-about-section'
 
 wyszukiwanie:
 curl -X GET "http://localhost:8000/api/search-users?keyword=John&gender=other&dob_day=29&dob_month=02&dob_year=2000"
+
+wydobycie "potencjalnych kandydatów" dla uzytkownika:
+
+curl -X GET "http://localhost:8000/api/search-matching-users/22625505-0f8a-443e-8cc8-56677a94bfb1"
+
+^ tu trzeba wlaczyc search.js
+
