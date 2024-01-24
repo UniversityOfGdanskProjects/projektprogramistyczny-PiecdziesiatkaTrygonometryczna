@@ -9,7 +9,7 @@ curl -X DELETE 'http://localhost:8000/delete-account?userId=ea9e08c2-e431-4a81-8
 
 
 wiadomosci:
-curl -X POST -H "Content-Type: application/json" -d '{"message": {"timestamp": "2020-02-29T10:10:19.432Z", "from_userId": "30859a36-a059-45f0-8186-5e42bcfdb635", "to_userId": "22625505-0f8a-443e-8cc8-56677a94bfb1", "message": "hej"}}' http://localhost:8000/message
+curl -X POST -H "Content-Type: application/json" -d '{"message": {"timestamp": "2020-02-30T10:10:19.432Z", "from_userId": "30859a36-a059-45f0-8186-5e42bcfdb635", "to_userId": "22625505-0f8a-443e-8cc8-56677a94bfb1", "message": "hej"}}' http://localhost:8000/message
 curl -X DELETE http://localhost:8000/message/65aff3200cb2e6d231421ac4
 curl -X PUT -H "Content-Type: application/json" -d '{"updatedMessage": {"timestamp": "2024-01-23T17:10:19.432Z", "from_userId": "8720f71f-0038-4f1d-b6a9-85c11bc84a50", "to_userId": "22625505-0f8a-443e-8cc8-56677a94bfb1", "message": "Nowa treść wiadomości"}}' http://localhost:8000/message/65aff2fb0cb2e6d231421ac3
 

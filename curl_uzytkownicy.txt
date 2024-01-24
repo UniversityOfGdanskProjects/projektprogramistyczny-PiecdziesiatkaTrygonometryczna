@@ -1,0 +1,19 @@
+curl -X POST -H "Content-Type: application/json" -d '{
+  "userData": {
+    "email": "1@p.te",
+    "hased_password": "hashed-password",
+    "about": "Hello, I'\''m a new user.",
+    "dob_day": "29",
+    "dob_month": "02",
+    "dob_year": "2001",
+    "first_name": "John",
+    "gender_identity": "man",
+    "gender_interest": "woman",
+    "matches": [
+      {"user_id": "existing-user-id-1"},
+      {"user_id": "existing-user-id-2"}
+    ],
+    "show_gender": "true",
+    "url": "https://example.com/avatar.jpg"
+  }
+}' http://localhost:8000/users-curl

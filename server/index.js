@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const aggregations = require('./aggregations');
+const validator = require('validator');
 
 
 const moment = require('moment');
@@ -240,6 +241,8 @@ app.get('/users-db', async (req, res) => {
     await client.close()
   }
 })
+
+
 
 
 
@@ -574,8 +577,61 @@ app.put('/message/:messageId', async (req, res) => {
 });
 
 
+// uzytkownicy
 
+// dodanie
 
+app.post('/users-curl', async (req, res) => {
+  const client = new MongoClient(uri);
+  const userData = req.body.userData;
+
+  try {
+    if (!validator.isEmail(userData.email)) {
+      return res.status(400).send('Invalid email format');
+    }
+
+    await client.connect();
+    const database = client.db('app-data');
+    const users = database.collection('users');
+    const generatedUserId = uuidv4();
+
+    if (!userData.about || userData.about.length > 500) {
+      return res.status(400).send('Invalid "about" field. It must not be empty and should be at most 500 characters.');
+    }
+    const dobYear = parseInt(userData.dob_year, 10);
+    const dobMonth = parseInt(userData.dob_month, 10);
+    const dobDay = parseInt(userData.dob_day, 10);
+
+    if (
+      isNaN(dobYear) || isNaN(dobMonth) || isNaN(dobDay) ||
+      dobMonth < 1 || dobMonth > 12 ||
+      dobDay < 1 || dobDay > new Date(dobYear, dobMonth, 0).getDate()
+    ) {
+      return res.status(400).json({ error: 'Invalid date. Please provide a valid date of birth.' });
+    }
+
+    const dobTimestamp = new Date(dobYear, dobMonth - 1, dobDay);
+
+    if (isNaN(dobTimestamp.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format.' });
+    }
+
+    const currentDate = new Date();
+    if (dobTimestamp > currentDate) {
+      return res.status(400).json({ error: 'Invalid date. Date of birth cannot be in the future.' });
+    }
+
+    userData.user_id = generatedUserId;
+
+    const insertedUser = await users.insertOne(userData);
+    res.status(201).send('User added successfully');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  } finally {
+    await client.close();
+  }
+});
 
 
 
