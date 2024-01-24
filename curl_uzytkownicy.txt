@@ -38,3 +38,6 @@ curl -X PUT -H "Content-Type: application/json" -d '{
   }
 }' http://localhost:8000/users/c5497fd8-76b3-46a8-a609-f3e61a1d6399
 
+
+curl -X DELETE http://localhost:8000/users/c5497fd8-76b3-46a8-a609-f3e61a1d6399
+
