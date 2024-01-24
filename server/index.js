@@ -504,6 +504,8 @@ app.delete('/message/:messageId', async (req, res) => {
   }
 });
 
+// edycja
+
 app.put('/message/:messageId', async (req, res) => {
   const client = new MongoClient(uri);
   const messageId = req.params.messageId;
@@ -663,6 +665,88 @@ app.post('/users-curl', async (req, res) => {
     await client.close();
   }
 });
+
+// edycja uzytkownika
+
+app.put('/users/:userId', async (req, res) => {
+  const client = new MongoClient(uri);
+  const userId = req.params.userId;
+  const updatedUserData = req.body.updatedUserData;
+
+  try {
+    await client.connect();
+    const database = client.db('app-data');
+    const users = database.collection('users');
+
+    const existingUser = await users.findOne({ user_id: userId });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    if (!updatedUserData.first_name || updatedUserData.first_name.length > 20) {
+      return res.status(400).send('Invalid "first_name" field. It must not be empty and should be at most 20 characters.');
+    }
+
+    if (updatedUserData.email && !validator.isEmail(updatedUserData.email)) {
+      return res.status(400).send('Invalid email format');
+    }
+
+    if (updatedUserData.about && (typeof updatedUserData.about !== 'string' || updatedUserData.about.length > 500)) {
+      return res.status(400).send('Invalid "about" field. It must be a string and should be at most 500 characters.');
+    }
+
+    if (updatedUserData.gender_identity && !['man', 'woman', 'other'].includes(updatedUserData.gender_identity)) {
+      return res.status(400).json({ error: 'Invalid "gender_identity". It must be "man", "woman", or "other".' });
+    }
+
+    if (updatedUserData.gender_interest && !['man', 'woman', 'all'].includes(updatedUserData.gender_interest)) {
+      return res.status(400).json({ error: 'Invalid "gender_interest". It must be "man", "woman", or "all".' });
+    }
+
+    if (updatedUserData.url && !validator.isURL(updatedUserData.url)) {
+      return res.status(400).send('Invalid "url" field. It must be a valid URL');
+    }
+
+    if (updatedUserData.matches) {
+      const existingUserIds = (await users.find({}, { projection: { user_id: 1 } }).toArray()).map(user => user.user_id);
+
+      for (const match of updatedUserData.matches) {
+        if (!existingUserIds.includes(match.user_id) || match.user_id === userId) {
+          return res.status(400).json({ error: 'Invalid "matches" field. Each user_id must exist in the database and be different from the current user.' });
+        }
+      }
+    }
+
+    const result = await users.updateOne(
+      { user_id: userId },
+      {
+        $set: {
+          first_name: updatedUserData.first_name,
+          email: updatedUserData.email,
+          about: updatedUserData.about,
+          gender_identity: updatedUserData.gender_identity,
+          gender_interest: updatedUserData.gender_interest,
+          url: updatedUserData.url,
+          matches: updatedUserData.matches,
+        }
+      }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.status(200).send('User updated successfully');
+    } else {
+      res.status(404).send('User not found');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  } finally {
+    await client.close();
+  }
+});
+
+
 
 
 
