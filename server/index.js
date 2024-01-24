@@ -597,6 +597,12 @@ app.post('/users-curl', async (req, res) => {
     const users = database.collection('users');
     const generatedUserId = uuidv4();
 
+
+       const existingUserWithEmail = await users.findOne({ email: userData.email });
+       if (existingUserWithEmail) {
+         return res.status(400).json({ error: 'Email already exists in the database.' });
+       }
+
     if (!userData.first_name || userData.first_name.length > 20) {
       return res.status(400).send('Invalid "first_name" field. It must not be empty.');
     }
@@ -690,6 +696,13 @@ app.put('/users/:userId', async (req, res) => {
 
     if (updatedUserData.email && !validator.isEmail(updatedUserData.email)) {
       return res.status(400).send('Invalid email format');
+    }
+
+    if (updatedUserData.email && updatedUserData.email !== existingUser.email) {
+      const emailExists = await users.findOne({ email: updatedUserData.email });
+      if (emailExists) {
+        return res.status(400).json({ error: 'Email already exists in the database.' });
+      }
     }
 
     if (updatedUserData.about && (typeof updatedUserData.about !== 'string' || updatedUserData.about.length > 500)) {
